@@ -1,0 +1,49 @@
+select
+t.DAFTAR,
+t.qty_t_e1 qty_t_e3,
+t.ZAMANEZAM_t_e1 ZAMANEZAM_t_e3,
+t.ZAMANRESIDAN_t_e1 ZAMANRESIDAN_t_e3,
+t.ZAMANTAMIR_t_e1 ZAMANTAMIR_t_e3,
+t.zamanentezar_t_t_e1 zamanentezar_t_t_e3,
+count(t.emdadid) qty_e3 ,
+round(avg(t.ZAMANEZAM),2) ZAMANEZAM_e3, 
+round(avg(t.ZAMANRESIDAN),2) ZAMANRESIDAN_e3, 
+round(avg(t.ZAMANTAMIR),2) ZAMANTAMIR_e3,
+round(avg(t.zamanentezar),2) zamanentezar_e3,
+sum(t.ZAMANEZAM_plus) ZAMANEZAM_plus_e3,
+sum(t.ZAMANTAMIR_plus) ZAMANTAMIR_plus_e3,
+sum(t.ZAMANRESIDAN_plus) ZAMANRESIDAN_plus_e3,
+sum(t.zamanentezar_plus) zamanentezar_plus_e3
+
+from (
+select
+e.DAFTAR,
+e.shahrname,
+e.emdadid,
+e.ZAMANEZAM,
+e.ZAMANRESIDAN,
+e.ZAMANTAMIR,
+e.zamanentezar,
+e.emdadgarid,
+e.emdadgar,
+e.JADEHYASHAHR_STR,
+e.MARKAZOSTANYANA,
+case when e.ZAMANEZAM > 5 then 1 else 0 end ZAMANEZAM_plus,
+case when e.ZAMANTAMIR > 20 then 1 else 0 end ZAMANTAMIR_plus,
+case when e.ZAMANRESIDAN > 30 then 1 else 0 end ZAMANRESIDAN_plus,
+case when e.zamanentezar > 40 then 1 else 0 end zamanentezar_plus,
+count(e.emdadid) over() qty_t_e1,
+round(avg(e.ZAMANEZAM)    over(),2) ZAMANEZAM_t_e1, 
+round(avg(e.ZAMANRESIDAN) over(),2) ZAMANRESIDAN_t_e1, 
+round(avg(e.ZAMANTAMIR)   over(),2) ZAMANTAMIR_t_e1,
+round(avg(e.zamanentezar) over(),2) zamanentezar_t_t_e1
+FROM wh.emdad_1 e     
+  WHERE e.timeable = 1   AND 
+        e.JADEYASHAHR = 2 and 
+        trunc(e.Zamanpayan) = trunc(sysdate)   
+) t 
+group by t.DAFTAR,t.qty_t_e1,t.ZAMANEZAM_t_e1,
+t.ZAMANRESIDAN_t_e1,
+t.ZAMANTAMIR_t_e1,
+t.zamanentezar_t_t_e1
+order by 1
